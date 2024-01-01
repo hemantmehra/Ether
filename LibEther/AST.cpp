@@ -14,7 +14,6 @@ void ScopeNode::dump(int indent) const
     auto children = m_children;
     for(auto i: children) {
         i->dump(indent);
-        putchar('\n');
     }
 }
 
