@@ -2,8 +2,8 @@
 #include <LibEther/AST.h>
 
 template<typename T, typename... Args>
-std::unique_ptr<T> make(Args... args) {
-    return std::make_unique<T>(args...);
+std::unique_ptr<T> make(Args&&... args) {
+    return std::make_unique<T>(std::forward<Args>(args)...);
 }
 
 int main()

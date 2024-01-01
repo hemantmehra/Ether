@@ -46,11 +46,11 @@ private:
 class ScopeNode : public ASTNode {
 public:
     template<typename T, typename... Args>
-    void append(Args&&... args)
+    T& append(Args&&... args)
     {
         auto child = std::make_shared<T>(std::forward<Args>(args)...);
-        m_children.push_back(child);
-        // return m_children.back();
+        m_children.push_back(std::move(child));
+        return static_cast<T&>(*m_children.back());
     }
 
     std::vector<std::shared_ptr<ASTNode>> children() const { return m_children; }
