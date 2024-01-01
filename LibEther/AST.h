@@ -28,6 +28,7 @@ class ASTNode {
 public:
     virtual ~ASTNode() = default;
     virtual void dump(int) const = 0;
+    virtual std::string generate_c_code(int) const = 0;
     // std::string class_name() const;
 
     virtual bool is_program() const { return false; }
@@ -55,6 +56,7 @@ public:
 
     std::vector<std::shared_ptr<ASTNode>> children() const { return m_children; }
     virtual void dump(int) const override;
+    virtual std::string generate_c_code(int) const override;
 
 protected:
     ScopeNode() {}
@@ -92,6 +94,7 @@ public:
     virtual bool is_function_declaration() const override { return true; }
     std::string name() const { return m_name; }
     virtual void dump(int) const override;
+    virtual std::string generate_c_code(int) const override;
 
 private:
     std::string m_name;
@@ -109,6 +112,7 @@ public:
 
     virtual bool is_return_statement() const override { return true; }
     virtual void dump(int) const override;
+    virtual std::string generate_c_code(int) const override;
 
 private:
     std::unique_ptr<ASTNode> m_argument;
@@ -120,6 +124,7 @@ public:
     Literal(int a) : m_value(a) {}
     virtual bool is_literal() const override { return true; }
     virtual void dump(int) const override;
+    virtual std::string generate_c_code(int) const override;
     int value() { return m_value; }
 
 private:

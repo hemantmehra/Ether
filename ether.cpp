@@ -16,5 +16,8 @@ int main()
     program->append<Ether::FunctionDeclaration>("main", std::move(block));
 
     program->dump(0);
+
+    std::string c_code = program->generate_c_code(0);
+    std::cout << c_code << '\n';
     return 0;
 }
