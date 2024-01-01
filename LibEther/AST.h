@@ -46,11 +46,11 @@ private:
 class ScopeNode : public ASTNode {
 public:
     template<typename T, typename... Args>
-    std::shared_ptr<T> append(Args... args)
+    void append(Args&&... args)
     {
-        auto child = std::make_shared<T>(args...);
+        auto child = std::make_shared<T>(std::forward<Args>(args)...);
         m_children.push_back(child);
-        return std::static_pointer_cast<T>(m_children.back());
+        // return m_children.back();
     }
 
     std::vector<std::shared_ptr<ASTNode>> children() const { return m_children; }
@@ -84,34 +84,34 @@ public:
 class FunctionDeclaration : public ASTNode
 {
 public:
-    FunctionDeclaration(std::string name, std::shared_ptr<ScopeNode> body)
-        : m_name(name), m_body(body)
+    FunctionDeclaration(std::string name, std::unique_ptr<ScopeNode> body)
+        : m_name(name), m_body(std::move(body))
     {}
 
-    std::shared_ptr<ScopeNode> body() const { return m_body; }
+    const ScopeNode& body() const { return *m_body; }
     virtual bool is_function_declaration() const override { return true; }
     std::string name() const { return m_name; }
     virtual void dump(int) const override;
 
 private:
     std::string m_name;
-    std::shared_ptr<ScopeNode> m_body;
+    std::unique_ptr<ScopeNode> m_body;
 };
 
 class ReturnStatement : public ASTNode
 {
 public:
-    ReturnStatement(std::shared_ptr<ASTNode> arg)
-        : m_argument(arg)
+    ReturnStatement(std::unique_ptr<ASTNode> arg)
+        : m_argument(std::move(arg))
     {}
 
-    const std::shared_ptr<ASTNode> argument() const { return m_argument; }
+    const ASTNode& argument() const { return *m_argument; }
 
     virtual bool is_return_statement() const override { return true; }
     virtual void dump(int) const override;
 
 private:
-    std::shared_ptr<ASTNode> m_argument;
+    std::unique_ptr<ASTNode> m_argument;
 };
 
 class Literal : public ASTNode

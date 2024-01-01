@@ -2,8 +2,8 @@
 #include <LibEther/AST.h>
 
 template<typename T, typename... Args>
-std::shared_ptr<T> make(Args... args) {
-    return std::make_shared<T>(args...);
+std::unique_ptr<T> make(Args... args) {
+    return std::make_unique<T>(args...);
 }
 
 int main()
@@ -13,7 +13,7 @@ int main()
     auto block = make<Ether::BlockStatement>();
     block->append<Ether::ReturnStatement>(make<Ether::Literal>(42));
 
-    program->append<Ether::FunctionDeclaration>("main", block);
+    program->append<Ether::FunctionDeclaration>("main", std::move(block));
 
     program->dump(0);
     return 0;
