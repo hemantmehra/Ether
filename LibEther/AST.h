@@ -120,6 +120,7 @@ public:
     Literal(int a) : m_value(a) {}
     virtual bool is_literal() const override { return true; }
     virtual void dump(int) const override;
+    int value() { return m_value; }
 
 private:
     int m_value;
