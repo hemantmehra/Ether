@@ -12,8 +12,8 @@ int main()
     auto program = make<Program>();
 
     auto block = make<BlockStatement>();
-    block->append<VariableDeclaration>("x", make<Literal>(4));
-    block->append<ReturnStatement>(make<Literal>(42));
+    block->append<VariableDeclaration>(make<Identifier>("x"), make<Literal>(4));
+    block->append<ReturnStatement>(make<Identifier>("x"));
 
     program->append<FunctionDeclaration>("main", std::move(block));
 

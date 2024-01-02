@@ -33,6 +33,7 @@ public:
     // std::string class_name() const;
 
     virtual bool is_program() const { return false; }
+    virtual bool is_identifier() const { return false; }
     virtual bool is_function_declaration() const { return false; }
     virtual bool is_block_statement() const { return false; }
     virtual bool is_return_statement() const { return false; }
@@ -85,22 +86,43 @@ public:
 
 };
 
+class Expression : public ASTNode
+{
+public:
+    Expression() {}
+    virtual void dump(int) const = 0;
+    virtual std::string generate_c_code(int) const = 0;
+};
+
+class Identifier final : public Expression
+{
+public:
+    Identifier(std::string name)
+        : m_name(name) {}
+
+    virtual bool is_identifier() const override { return true; }
+    virtual void dump(int) const override;
+    virtual std::string generate_c_code(int) const override;
+private:
+    std::string m_name;
+};
+
 class VariableDeclaration : public ASTNode
 {
 public:
-    VariableDeclaration(std::string identifier, std::unique_ptr<Literal> literal)
-        : m_identifier(identifier), m_literal(std::move(literal))
+    VariableDeclaration(std::unique_ptr<Identifier> identifier, std::unique_ptr<Expression> expression)
+        : m_identifier(std::move(identifier)), m_expression(std::move(expression))
     {}
 
-    const Literal& literal() const { return *m_literal; }
+    const Expression& expression() const { return *m_expression; }
+    const Identifier& identifier() const { return *m_identifier; }
     virtual bool is_variable_declaration() const override { return true; }
-    std::string identifier() const { return m_identifier; }
     virtual void dump(int) const override;
     virtual std::string generate_c_code(int) const override;
 
 private:
-    std::string m_identifier;
-    std::unique_ptr<Literal> m_literal;
+    std::unique_ptr<Identifier> m_identifier;
+    std::unique_ptr<Expression> m_expression;
 };
 
 class FunctionDeclaration : public ASTNode
@@ -124,21 +146,21 @@ private:
 class ReturnStatement : public ASTNode
 {
 public:
-    ReturnStatement(std::unique_ptr<ASTNode> arg)
+    ReturnStatement(std::unique_ptr<Expression> arg)
         : m_argument(std::move(arg))
     {}
 
-    const ASTNode& argument() const { return *m_argument; }
+    const Expression& argument() const { return *m_argument; }
 
     virtual bool is_return_statement() const override { return true; }
     virtual void dump(int) const override;
     virtual std::string generate_c_code(int) const override;
 
 private:
-    std::unique_ptr<ASTNode> m_argument;
+    std::unique_ptr<Expression> m_argument;
 };
 
-class Literal : public ASTNode
+class Literal : public Expression
 {
 public:
     Literal(int a) : m_value(a) {}
