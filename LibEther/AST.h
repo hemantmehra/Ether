@@ -10,6 +10,7 @@ class Program;
 class FunctionDeclaration;
 class BlockStatement;
 class ReturnStatement;
+class Literal;
 
 struct Position {
     size_t line { 0 };
@@ -36,6 +37,7 @@ public:
     virtual bool is_block_statement() const { return false; }
     virtual bool is_return_statement() const { return false; }
     virtual bool is_literal() const { return false; }
+    virtual bool is_variable_declaration() const { return false; }
 
 protected:
     ASTNode() {}
@@ -81,6 +83,24 @@ public:
     BlockStatement() {}
     virtual bool is_block_statement() const override { return true; }
 
+};
+
+class VariableDeclaration : public ASTNode
+{
+public:
+    VariableDeclaration(std::string identifier, std::unique_ptr<Literal> literal)
+        : m_identifier(identifier), m_literal(std::move(literal))
+    {}
+
+    const Literal& literal() const { return *m_literal; }
+    virtual bool is_variable_declaration() const override { return true; }
+    std::string identifier() const { return m_identifier; }
+    virtual void dump(int) const override;
+    virtual std::string generate_c_code(int) const override;
+
+private:
+    std::string m_identifier;
+    std::unique_ptr<Literal> m_literal;
 };
 
 class FunctionDeclaration : public ASTNode

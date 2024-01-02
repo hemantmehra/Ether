@@ -29,8 +29,19 @@ std::string FunctionDeclaration::generate_c_code(int indent) const
 
     ss << indent_str << "int " << name() << "()" << '\n';
     ss << indent_str << "{\n";
-    ss << body().generate_c_code(indent + 1) << '\n';
+    ss << body().generate_c_code(indent + 1);
     ss << indent_str << "}\n";
+
+    return ss.str();
+}
+
+std::string VariableDeclaration::generate_c_code(int indent) const
+{
+    std::stringstream ss;
+    std::string indent_str = get_indent_string(indent);
+
+    ss << indent_str << "int " << identifier() << " = ";
+    ss << literal().generate_c_code(indent) << ';' << '\n';
 
     return ss.str();
 }
@@ -38,7 +49,7 @@ std::string FunctionDeclaration::generate_c_code(int indent) const
 std::string ReturnStatement::generate_c_code(int indent) const
 {
     std::stringstream ss;
-    ss << get_indent_string(indent + 1);
+    ss << get_indent_string(indent);
     ss << "return " << argument().generate_c_code(indent) << ";\n";
     return ss.str();
 }
@@ -70,6 +81,13 @@ void FunctionDeclaration::dump(int indent) const
     print_indent(indent);
     std::cout << "FunctionDeclaration: " << name() << '\n';
     body().dump(indent + 1);
+}
+
+void VariableDeclaration::dump(int indent) const
+{
+    print_indent(indent);
+    std::cout << "VaribleDeclaration: " << identifier() << "\n";
+    literal().dump(indent + 1);
 }
 
 void ReturnStatement::dump(int indent) const
