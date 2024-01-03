@@ -22,6 +22,19 @@ std::string ScopeNode::generate_c_code(int indent) const
     return ss.str();
 }
 
+std::string StructDeclaration::generate_c_code(int indent) const
+{
+    std::stringstream ss;
+    std::string indent_str = get_indent_string(indent);
+
+    ss << indent_str << "struct " << name() << '\n';
+    ss << indent_str << "{\n";
+    ss << body().generate_c_code(indent + 1);
+    ss << indent_str << "};\n\n";
+
+    return ss.str();
+}
+
 std::string FunctionDeclaration::generate_c_code(int indent) const
 {
     std::stringstream ss;
@@ -40,8 +53,8 @@ std::string VariableDeclaration::generate_c_code(int indent) const
     std::stringstream ss;
     std::string indent_str = get_indent_string(indent);
 
-    ss << indent_str << "int " << identifier().generate_c_code(indent) << " = ";
-    ss << expression().generate_c_code(indent) << ';' << '\n';
+    ss << indent_str << "int " << identifier().generate_c_code(indent) ; // << " = ";
+    ss << /* expression().generate_c_code(indent)  << */ ';' << '\n';
 
     return ss.str();
 }
@@ -84,6 +97,13 @@ void ScopeNode::dump(int indent) const
     }
 }
 
+void StructDeclaration::dump(int indent) const
+{
+    print_indent(indent);
+    std::cout << "StructDeclaration: " << name() << '\n';
+    body().dump(indent + 1);
+}
+
 void FunctionDeclaration::dump(int indent) const
 {
     print_indent(indent);
@@ -96,7 +116,7 @@ void VariableDeclaration::dump(int indent) const
     print_indent(indent);
     std::cout << "VaribleDeclaration: " << "\n";
     identifier().dump(indent + 1);
-    expression().dump(indent + 1);
+    // expression().dump(indent + 1);
 }
 
 void ReturnStatement::dump(int indent) const

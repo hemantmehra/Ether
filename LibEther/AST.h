@@ -39,6 +39,7 @@ public:
     virtual bool is_return_statement() const { return false; }
     virtual bool is_literal() const { return false; }
     virtual bool is_variable_declaration() const { return false; }
+    virtual bool is_struct_declaration() const { return false; }
 
 protected:
     ASTNode() {}
@@ -100,6 +101,7 @@ public:
     Identifier(std::string name)
         : m_name(name) {}
 
+    std::string name() const { return m_name; }
     virtual bool is_identifier() const override { return true; }
     virtual void dump(int) const override;
     virtual std::string generate_c_code(int) const override;
@@ -110,43 +112,61 @@ private:
 class VariableDeclaration : public ASTNode
 {
 public:
-    VariableDeclaration(std::unique_ptr<Identifier> identifier, std::unique_ptr<Expression> expression)
-        : m_identifier(std::move(identifier)), m_expression(std::move(expression))
+    VariableDeclaration(std::shared_ptr<Identifier> identifier) // , std::unique_ptr<Expression> expression)
+        : m_identifier(std::move(identifier))//, m_expression(std::move(expression))
     {}
 
-    const Expression& expression() const { return *m_expression; }
+    // const Expression& expression() const { return *m_expression; }
     const Identifier& identifier() const { return *m_identifier; }
     virtual bool is_variable_declaration() const override { return true; }
     virtual void dump(int) const override;
     virtual std::string generate_c_code(int) const override;
 
 private:
-    std::unique_ptr<Identifier> m_identifier;
-    std::unique_ptr<Expression> m_expression;
+    std::shared_ptr<Identifier> m_identifier;
+    // std::unique_ptr<Expression> m_expression;
+};
+
+class StructDeclaration : public ASTNode
+{
+public:
+    StructDeclaration(std::shared_ptr<Identifier> identifier, std::unique_ptr<ScopeNode> body)
+        : m_identifier(std::move(identifier)), m_body(std::move(body))
+    {}
+
+    std::string name() const { return m_identifier->name(); }
+    const ScopeNode& body() const { return *m_body; }
+    virtual bool is_struct_declaration() const override { return true; }
+    virtual void dump(int) const override;
+    virtual std::string generate_c_code(int) const override;
+
+private:
+    std::shared_ptr<Identifier> m_identifier;
+    std::unique_ptr<ScopeNode> m_body;
 };
 
 class FunctionDeclaration : public ASTNode
 {
 public:
-    FunctionDeclaration(std::string name, std::unique_ptr<ScopeNode> body)
-        : m_name(name), m_body(std::move(body))
+    FunctionDeclaration(std::shared_ptr<Identifier> identifier, std::unique_ptr<ScopeNode> body)
+        : m_identifier(std::move(identifier)), m_body(std::move(body))
     {}
 
+    std::string name() const { return m_identifier->name(); }
     const ScopeNode& body() const { return *m_body; }
     virtual bool is_function_declaration() const override { return true; }
-    std::string name() const { return m_name; }
     virtual void dump(int) const override;
     virtual std::string generate_c_code(int) const override;
 
 private:
-    std::string m_name;
+    std::shared_ptr<Identifier> m_identifier;
     std::unique_ptr<ScopeNode> m_body;
 };
 
 class ReturnStatement : public ASTNode
 {
 public:
-    ReturnStatement(std::unique_ptr<Expression> arg)
+    ReturnStatement(std::shared_ptr<Expression> arg)
         : m_argument(std::move(arg))
     {}
 
@@ -157,7 +177,7 @@ public:
     virtual std::string generate_c_code(int) const override;
 
 private:
-    std::unique_ptr<Expression> m_argument;
+    std::shared_ptr<Expression> m_argument;
 };
 
 class Literal : public Expression
