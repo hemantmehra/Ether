@@ -50,10 +50,11 @@ std::string FunctionDeclaration::generate_c_code(int indent) const
 
 std::string VariableDeclaration::generate_c_code(int indent) const
 {
+    auto datatype_list = DataTypeList::get_instance();
     std::stringstream ss;
     std::string indent_str = get_indent_string(indent);
 
-    ss << indent_str << "int " << identifier().generate_c_code(indent);
+    ss << indent_str << datatype_list->get(m_datatype_id) << " " << identifier().generate_c_code(indent);
     if (expression() != nullptr) {
         ss << " = " << expression()->generate_c_code(indent);
     }

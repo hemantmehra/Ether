@@ -4,6 +4,7 @@
 #include <memory>
 #include <vector>
 #include <optional>
+#include <LibEther/DataTypes.h>
 
 namespace Ether {
     
@@ -113,8 +114,8 @@ private:
 class VariableDeclaration : public ASTNode
 {
 public:
-    VariableDeclaration(std::shared_ptr<Identifier> identifier, std::shared_ptr<Expression> expression)
-        : m_identifier(std::move(identifier)), m_expression(expression)
+    VariableDeclaration(int datatype_id, std::shared_ptr<Identifier> identifier, std::shared_ptr<Expression> expression)
+        : m_datatype_id(datatype_id), m_identifier(std::move(identifier)), m_expression(expression)
     {}
 
     std::shared_ptr<Expression> expression() const { return m_expression; }
@@ -124,6 +125,7 @@ public:
     virtual std::string generate_c_code(int) const override;
 
 private:
+    int m_datatype_id;
     std::shared_ptr<Identifier> m_identifier;
     std::shared_ptr<Expression> m_expression;
 };

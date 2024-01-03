@@ -12,5 +12,6 @@ add_compile_options(-Wall -Wextra -Wpedantic)
 
 add_executable(ether ether.cpp
                 LibEther/AST.cpp
+                LibEther/DataTypes.cpp
 )
 

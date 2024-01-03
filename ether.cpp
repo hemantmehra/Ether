@@ -1,5 +1,6 @@
 #include <iostream>
 #include <LibEther/AST.h>
+#include <LibEther/DataTypes.h>
 
 template <typename T, typename... Args>
 std::unique_ptr<T> make(Args &&...args) {
@@ -9,20 +10,26 @@ std::unique_ptr<T> make(Args &&...args) {
 int main()
 {
     using namespace Ether;
+    auto datatype_list = DataTypeList::get_instance();
+    datatype_list->add("struct Vector");
+
     auto program = make<Program>();
 
     auto struct_block = make<BlockStatement>();
     auto func_block = make<BlockStatement>();
 
     struct_block->append<VariableDeclaration>(
-        std::make_shared<Identifier>("x"), nullptr
+        0, std::make_shared<Identifier>("x"), nullptr
     );
     struct_block->append<VariableDeclaration>(
-        std::make_shared<Identifier>("y"), nullptr
+        0, std::make_shared<Identifier>("y"), nullptr
     );
 
     func_block->append<VariableDeclaration>(
-        std::make_shared<Identifier>("a"), std::make_shared<Literal>(42)
+        0, std::make_shared<Identifier>("a"), std::make_shared<Literal>(42)
+    );
+    func_block->append<VariableDeclaration>(
+        1, std::make_shared<Identifier>("v1"), nullptr
     );
     func_block->append<ReturnStatement>(std::make_shared<Identifier>("a"));
 
