@@ -37,10 +37,11 @@ std::string StructDeclaration::generate_c_code(int indent) const
 
 std::string FunctionDeclaration::generate_c_code(int indent) const
 {
+    auto datatype_list = DataTypeList::get_instance();
     std::stringstream ss;
     std::string indent_str = get_indent_string(indent);
 
-    ss << indent_str << "int " << name() << "()" << '\n';
+    ss << indent_str << datatype_list->get(m_datatype_id) << " " << name() << "()" << '\n';
     ss << indent_str << "{\n";
     ss << body().generate_c_code(indent + 1);
     ss << indent_str << "}\n";

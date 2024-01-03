@@ -1,3 +1,4 @@
+#include <fstream>
 #include <iostream>
 #include <LibEther/AST.h>
 #include <LibEther/DataTypes.h>
@@ -35,7 +36,8 @@ int main()
 
     program->append<StructDeclaration>(std::make_shared<Identifier>("Vector"),
                                         std::move(struct_block));
-    program->append<FunctionDeclaration>(std::make_shared<Identifier>("main"),
+    program->append<FunctionDeclaration>(0,
+                                        std::make_shared<Identifier>("main"),
                                         std::move(func_block));
 
     program->dump(0);
@@ -43,5 +45,11 @@ int main()
     std::string c_code = program->generate_c_code(0);
     std::cout << "------------------------" << '\n';
     std::cout << c_code << '\n';
+
+    std::string output_filename = "output.c";
+    std::ofstream out_asm(output_filename);
+    out_asm << c_code;
+    out_asm.close();
+
     return 0;
 }

@@ -151,8 +151,8 @@ private:
 class FunctionDeclaration : public ASTNode
 {
 public:
-    FunctionDeclaration(std::shared_ptr<Identifier> identifier, std::unique_ptr<ScopeNode> body)
-        : m_identifier(std::move(identifier)), m_body(std::move(body))
+    FunctionDeclaration(int datatype_id, std::shared_ptr<Identifier> identifier, std::unique_ptr<ScopeNode> body)
+        : m_datatype_id(datatype_id), m_identifier(std::move(identifier)), m_body(std::move(body))
     {}
 
     std::string name() const { return m_identifier->name(); }
@@ -162,6 +162,7 @@ public:
     virtual std::string generate_c_code(int) const override;
 
 private:
+    int m_datatype_id;
     std::shared_ptr<Identifier> m_identifier;
     std::unique_ptr<ScopeNode> m_body;
 };

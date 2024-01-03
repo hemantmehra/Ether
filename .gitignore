@@ -2,6 +2,10 @@
 build/
 .vscode/
 
+# C code
+output.c
+output
+
 # Prerequisites
 *.d
 
