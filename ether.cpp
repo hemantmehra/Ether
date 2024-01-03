@@ -15,13 +15,16 @@ int main()
     auto func_block = make<BlockStatement>();
 
     struct_block->append<VariableDeclaration>(
-        std::make_shared<Identifier>("x") //, make<Literal>(4)
+        std::make_shared<Identifier>("x"), nullptr
+    );
+    struct_block->append<VariableDeclaration>(
+        std::make_shared<Identifier>("y"), nullptr
     );
 
     func_block->append<VariableDeclaration>(
-        std::make_shared<Identifier>("x") // , make<Literal>(4)
+        std::make_shared<Identifier>("a"), std::make_shared<Literal>(42)
     );
-    func_block->append<ReturnStatement>(std::make_shared<Identifier>("x"));
+    func_block->append<ReturnStatement>(std::make_shared<Identifier>("a"));
 
     program->append<StructDeclaration>(std::make_shared<Identifier>("Vector"),
                                         std::move(struct_block));

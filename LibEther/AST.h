@@ -3,6 +3,7 @@
 #include <string>
 #include <memory>
 #include <vector>
+#include <optional>
 
 namespace Ether {
     
@@ -112,11 +113,11 @@ private:
 class VariableDeclaration : public ASTNode
 {
 public:
-    VariableDeclaration(std::shared_ptr<Identifier> identifier) // , std::unique_ptr<Expression> expression)
-        : m_identifier(std::move(identifier))//, m_expression(std::move(expression))
+    VariableDeclaration(std::shared_ptr<Identifier> identifier, std::shared_ptr<Expression> expression)
+        : m_identifier(std::move(identifier)), m_expression(expression)
     {}
 
-    // const Expression& expression() const { return *m_expression; }
+    std::shared_ptr<Expression> expression() const { return m_expression; }
     const Identifier& identifier() const { return *m_identifier; }
     virtual bool is_variable_declaration() const override { return true; }
     virtual void dump(int) const override;
@@ -124,7 +125,7 @@ public:
 
 private:
     std::shared_ptr<Identifier> m_identifier;
-    // std::unique_ptr<Expression> m_expression;
+    std::shared_ptr<Expression> m_expression;
 };
 
 class StructDeclaration : public ASTNode

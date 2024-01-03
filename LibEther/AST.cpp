@@ -53,9 +53,11 @@ std::string VariableDeclaration::generate_c_code(int indent) const
     std::stringstream ss;
     std::string indent_str = get_indent_string(indent);
 
-    ss << indent_str << "int " << identifier().generate_c_code(indent) ; // << " = ";
-    ss << /* expression().generate_c_code(indent)  << */ ';' << '\n';
-
+    ss << indent_str << "int " << identifier().generate_c_code(indent);
+    if (expression() != nullptr) {
+        ss << " = " << expression()->generate_c_code(indent);
+    }
+    ss << ";\n";
     return ss.str();
 }
 
