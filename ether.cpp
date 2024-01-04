@@ -52,13 +52,13 @@ int main()
     out_asm << c_code;
     out_asm.close();
 
-    Tokenizer tokenizer("fn main() {}");
+    Tokenizer tokenizer("fn main() { return; }");
     while (true)
     {
-        auto str = tokenizer.next_token();
-        if (!str.has_value()) break;
+        auto token = tokenizer.next_token();
+        if (!token.has_value()) break;
 
-        std::cout << str.value() << '\n';
+        std::cout << token.value().to_string() << '\n';
     }
 
     return 0;

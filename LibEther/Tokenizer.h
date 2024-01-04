@@ -2,28 +2,32 @@
 #include <string>
 #include <optional>
 #include <vector>
+#include <LibEther/Assert.h>
+
+#define LIST_TOKEN_TYPES \
+    __LIST_TOKEN_TYPE(OpenParen)  /* () */ \
+    __LIST_TOKEN_TYPE(CloseParen) \
+    __LIST_TOKEN_TYPE(OpenBrace) /* {} */ \
+    __LIST_TOKEN_TYPE(CloseBrace) \
+    __LIST_TOKEN_TYPE(OpenBracket)  /* [] */ \
+    __LIST_TOKEN_TYPE(CloseBracket) \
+    __LIST_TOKEN_TYPE(Comma) \
+    __LIST_TOKEN_TYPE(Semicolon) \
+    __LIST_TOKEN_TYPE(Operator) \
+    __LIST_TOKEN_TYPE(Constant) \
+    __LIST_TOKEN_TYPE(String) \
+    __LIST_TOKEN_TYPE(Identifier) \
+    __LIST_TOKEN_TYPE(K_fn) \
+    __LIST_TOKEN_TYPE(K_return) \
 
 namespace Ether
 {
 
 enum class TokenType
 {
-    // ()
-    OpenParen,
-    CloseParen,
-    // {}
-    OpenBrace,
-    CloseBrace,
-    // []
-    OpenBracket ,
-    CloseBracket,
-
-    Comma,
-    Semicolon,
-    Operator,
-    Keyword,
-    Constants,
-    String
+#define __LIST_TOKEN_TYPE(x) x,
+    LIST_TOKEN_TYPES
+#undef __LIST_TOKEN_TYPE
 };
 
 struct Token
@@ -31,6 +35,9 @@ struct Token
     TokenType token_type;
     int data_int;
     std::string data_str;
+
+    Token(TokenType type) : token_type(type) {}
+    std::string to_string();
 };
 
 class Tokenizer
