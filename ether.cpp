@@ -2,6 +2,7 @@
 #include <iostream>
 #include <LibEther/AST.h>
 #include <LibEther/DataTypes.h>
+#include <LibEther/Tokenizer.h>
 
 template <typename T, typename... Args>
 std::unique_ptr<T> make(Args &&...args) {
@@ -50,6 +51,15 @@ int main()
     std::ofstream out_asm(output_filename);
     out_asm << c_code;
     out_asm.close();
+
+    Tokenizer tokenizer("fn main() {}");
+    while (true)
+    {
+        auto str = tokenizer.next_token();
+        if (!str.has_value()) break;
+
+        std::cout << str.value() << '\n';
+    }
 
     return 0;
 }
