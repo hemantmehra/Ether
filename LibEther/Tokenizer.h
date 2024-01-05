@@ -38,6 +38,7 @@ struct Token
 
     Token(TokenType type) : token_type(type) {}
     std::string to_string();
+    TokenType type() { return token_type; }
 };
 
 class Tokenizer

@@ -43,7 +43,7 @@ std::string FunctionDeclaration::generate_c_code(int indent) const
 
     ss << indent_str << datatype_list->get(m_datatype_id) << " " << name() << "()" << '\n';
     ss << indent_str << "{\n";
-    ss << body().generate_c_code(indent + 1);
+    ss << body()->generate_c_code(indent + 1);
     ss << indent_str << "}\n";
 
     return ss.str();
@@ -112,7 +112,7 @@ void FunctionDeclaration::dump(int indent) const
 {
     print_indent(indent);
     std::cout << "FunctionDeclaration: " << name() << '\n';
-    body().dump(indent + 1);
+    body()->dump(indent + 1);
 }
 
 void VariableDeclaration::dump(int indent) const

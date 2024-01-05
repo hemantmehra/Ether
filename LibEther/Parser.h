@@ -1,0 +1,33 @@
+#pragma once
+
+#include <optional>
+#include <vector>
+#include <memory>
+#include <LibEther/AST.h>
+#include <LibEther/Tokenizer.h>
+
+
+namespace Ether
+{
+
+class Parser
+{
+public:
+    Parser(std::vector<Token>);
+    std::shared_ptr<Program> parse();
+
+private:
+    std::unique_ptr<FunctionDeclaration> parse_function_declaration();
+    std::unique_ptr<BlockStatement> parse_block_statement();
+    // std::shared_ptr<VariableDeclaration> parse_variable_declaration();
+    std::shared_ptr<ReturnStatement> parse_return_statement();
+    // std::shared_ptr<Expression> parse_expression();
+
+    std::optional<Token> seek_token(size_t);
+    void consume_token();
+
+    size_t m_cursor { 0 };
+    std::vector<Token> m_tokens;
+};
+
+} // namespace Ether

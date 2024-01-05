@@ -2,6 +2,7 @@
 #include <iostream>
 #include <LibEther/AST.h>
 #include <LibEther/DataTypes.h>
+#include <LibEther/Parser.h>
 #include <LibEther/Tokenizer.h>
 
 template <typename T, typename... Args>
@@ -40,26 +41,37 @@ int main()
     program->append<FunctionDeclaration>(0,
                                         std::make_shared<Identifier>("main"),
                                         std::move(func_block));
-
-    program->dump(0);
+    // program->dump(0);
 
     std::string c_code = program->generate_c_code(0);
     std::cout << "------------------------" << '\n';
-    std::cout << c_code << '\n';
+    // std::cout << c_code << '\n';
 
     std::string output_filename = "output.c";
     std::ofstream out_asm(output_filename);
     out_asm << c_code;
-    out_asm.close();
+    // out_asm.close();
 
     Tokenizer tokenizer("fn main() { return; }");
+    std::vector<Token> tokens;
     while (true)
     {
         auto token = tokenizer.next_token();
         if (!token.has_value()) break;
+        tokens.push_back(token.value());
 
         std::cout << token.value().to_string() << '\n';
     }
+
+    std::cout << "------------------------" << '\n';
+
+    Parser parser(tokens);
+    auto program2 = parser.parse();
+    program2->dump(0);
+
+    std::string c_code2 = program2->generate_c_code(0);
+    std::cout << "------------------------" << '\n';
+    std::cout << c_code2 << '\n';
 
     return 0;
 }

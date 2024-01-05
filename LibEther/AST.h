@@ -60,6 +60,11 @@ public:
         return static_cast<T&>(*m_children.back());
     }
 
+    void append(std::shared_ptr<ASTNode> child)
+    {
+        m_children.push_back(std::move(child));
+    }
+
     std::vector<std::shared_ptr<ASTNode>> children() const { return m_children; }
     virtual void dump(int) const override;
     virtual std::string generate_c_code(int) const override;
@@ -151,12 +156,13 @@ private:
 class FunctionDeclaration : public ASTNode
 {
 public:
-    FunctionDeclaration(int datatype_id, std::shared_ptr<Identifier> identifier, std::unique_ptr<ScopeNode> body)
+    FunctionDeclaration(int datatype_id, std::shared_ptr<Identifier> identifier, std::shared_ptr<ScopeNode> body)
         : m_datatype_id(datatype_id), m_identifier(std::move(identifier)), m_body(std::move(body))
     {}
 
     std::string name() const { return m_identifier->name(); }
-    const ScopeNode& body() const { return *m_body; }
+    // const ScopeNode& body() const { return *m_body; }
+    std::shared_ptr<ScopeNode> body () const { return m_body; }
     virtual bool is_function_declaration() const override { return true; }
     virtual void dump(int) const override;
     virtual std::string generate_c_code(int) const override;
@@ -164,7 +170,7 @@ public:
 private:
     int m_datatype_id;
     std::shared_ptr<Identifier> m_identifier;
-    std::unique_ptr<ScopeNode> m_body;
+    std::shared_ptr<ScopeNode> m_body;
 };
 
 class ReturnStatement : public ASTNode
