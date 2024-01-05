@@ -46,12 +46,6 @@ std::shared_ptr<Program> Parser::parse()
             auto program = std::make_unique<Program>();
             auto fn_decl = parse_function_declaration();
             program->append(fn_decl);
-            // program->append<FunctionDeclaration>(
-            //     0,
-            //     std::make_shared<Identifier>(fn_decl->name()),
-            //     // make<BlockStatement>()
-            //     std::move(fn_decl->body())
-            // );
             return program;
         }
         return {};
@@ -67,7 +61,7 @@ std::shared_ptr<FunctionDeclaration> Parser::parse_function_declaration()
     size_t i = m_cursor;
     auto fn_decl = std::make_shared<FunctionDeclaration>();
     if (!seek_token(i).has_value()) {
-        Error("Missing function definition");
+        Error("Unexpected end of program. Missing function definition");
         return fn_decl;
     }
 
@@ -82,7 +76,6 @@ std::shared_ptr<FunctionDeclaration> Parser::parse_function_declaration()
     consume_token();
 
     auto block = parse_block_statement();
-    auto fn_block = make<BlockStatement>();
     fn_decl = std::make_shared<FunctionDeclaration>(
         0,
         std::make_shared<Identifier>(seek_token(i).value().data_str),
@@ -94,18 +87,34 @@ std::shared_ptr<FunctionDeclaration> Parser::parse_function_declaration()
 
 std::unique_ptr<BlockStatement> Parser::parse_block_statement()
 {
+#ifdef PARSER_DEBUG
+    std::cout << "Parser::parse_block_statement()" << '\n';
+#endif
     size_t i = m_cursor;
-    if (seek_token(i).has_value() && seek_token(i+1).has_value()) {
-        if (seek_token(i).value().type() == TokenType::OpenBrace) {
-            consume_token();
-            auto return_statement = parse_return_statement();
-            consume_token();
-            auto block = make<BlockStatement>();
-            block->append(return_statement);
-            return block;
-        }
+    auto block = make<BlockStatement>();
+    if (!seek_token(i).has_value()) {
+        Error("Unexpected end of program. Missing function definition");
+        return block;
     }
-    return {};
+
+    if (seek_token(i).value().type() != TokenType::OpenBrace)
+    {
+        Error("Missing \'{\'.");
+        return block;
+    }
+
+    consume_token();
+    auto return_statement = parse_return_statement();
+
+    if (seek_token(m_cursor).value().type() != TokenType::CloseBrace)
+    {
+        Error("Missing \'}\'.");
+        return block;
+    }
+
+    consume_token();
+    block->append(return_statement);
+    return block;
 }
 
 // std::shared_ptr<VariableDeclaration> Parser::parse_variable_declaration()
@@ -113,18 +122,25 @@ std::unique_ptr<BlockStatement> Parser::parse_block_statement()
 
 std::shared_ptr<ReturnStatement> Parser::parse_return_statement()
 {
+#ifdef PARSER_DEBUG
+    std::cout << "Parser::parse_return_statement()" << '\n';
+#endif
     size_t i = m_cursor;
-    if (seek_token(i).has_value() && seek_token(i+1).has_value()) {
-        if (seek_token(i).value().type() == TokenType::K_return &&
-            seek_token(i+1).value().type() == TokenType::Semicolon
-        ) {
-            consume_token();
-            consume_token();
-            auto return_statement = std::make_shared<ReturnStatement>(make<Literal>(0));
-            return return_statement;
-        }
+    auto return_statement = std::make_shared<ReturnStatement>(make<Literal>(0));
+    if (!seek_token(i).has_value()) {
+        Error("Unexpected end of program.");
+        return return_statement;
     }
-    return {};
+
+    if (seek_token(i).value().type() != TokenType::K_return)
+    {
+        Error("Missing return keyword.");
+        return return_statement;
+    }
+
+        consume_token();
+    consume_token();
+    return return_statement;
 }
 
 }
