@@ -156,6 +156,7 @@ private:
 class FunctionDeclaration : public ASTNode
 {
 public:
+    FunctionDeclaration() {}
     FunctionDeclaration(int datatype_id, std::shared_ptr<Identifier> identifier, std::shared_ptr<ScopeNode> body)
         : m_datatype_id(datatype_id), m_identifier(std::move(identifier)), m_body(std::move(body))
     {}

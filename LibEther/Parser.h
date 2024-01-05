@@ -10,14 +10,26 @@
 namespace Ether
 {
 
+class ParserError
+{
+public:
+    ParserError(std::string error) : m_error(error) {}
+    std::string to_string() { return m_error; }
+
+private:
+    std::string m_error;
+};
+
 class Parser
 {
 public:
     Parser(std::vector<Token>);
     std::shared_ptr<Program> parse();
+    void Error(std::string);
+    std::vector<ParserError> get_errors() { return m_errors; }
 
 private:
-    std::unique_ptr<FunctionDeclaration> parse_function_declaration();
+    std::shared_ptr<FunctionDeclaration> parse_function_declaration();
     std::unique_ptr<BlockStatement> parse_block_statement();
     // std::shared_ptr<VariableDeclaration> parse_variable_declaration();
     std::shared_ptr<ReturnStatement> parse_return_statement();
@@ -28,6 +40,7 @@ private:
 
     size_t m_cursor { 0 };
     std::vector<Token> m_tokens;
+    std::vector<ParserError> m_errors;
 };
 
 } // namespace Ether

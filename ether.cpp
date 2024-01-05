@@ -67,6 +67,15 @@ int main()
 
     Parser parser(tokens);
     auto program2 = parser.parse();
+    auto errors = parser.get_errors();
+
+    if (errors.size() > 0) {
+        for(auto err: errors) {
+            std::cout << err.to_string() << '\n';
+        }
+        return 1;
+    }
+
     program2->dump(0);
 
     std::string c_code2 = program2->generate_c_code(0);

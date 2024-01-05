@@ -10,6 +10,11 @@ Parser::Parser(std::vector<Token> tokens)
     : m_tokens(tokens)
 {}
 
+void Parser::Error(std::string err)
+{
+    m_errors.push_back(ParserError(err));
+}
+
 std::optional<Token> Parser::seek_token(size_t i)
 {
     if (i < m_tokens.size()) return m_tokens.at(i);
@@ -31,18 +36,22 @@ std::unique_ptr<T> make(Args &&...args) {
 
 std::shared_ptr<Program> Parser::parse()
 {
+#ifdef PARSER_DEBUG
+    std::cout << "Parser::parse()" << '\n';
+#endif
     if (seek_token(m_cursor).has_value())
     {
         if (seek_token(m_cursor).value().type() == TokenType::K_fn) {
             consume_token();
             auto program = std::make_unique<Program>();
             auto fn_decl = parse_function_declaration();
-            program->append<FunctionDeclaration>(
-                0,
-                std::make_shared<Identifier>(fn_decl->name()),
-                // make<BlockStatement>()
-                std::move(fn_decl->body())
-            );
+            program->append(fn_decl);
+            // program->append<FunctionDeclaration>(
+            //     0,
+            //     std::make_shared<Identifier>(fn_decl->name()),
+            //     // make<BlockStatement>()
+            //     std::move(fn_decl->body())
+            // );
             return program;
         }
         return {};
@@ -50,28 +59,37 @@ std::shared_ptr<Program> Parser::parse()
     return {};
 }
 
-std::unique_ptr<FunctionDeclaration> Parser::parse_function_declaration()
+std::shared_ptr<FunctionDeclaration> Parser::parse_function_declaration()
 {
+#ifdef PARSER_DEBUG
+    std::cout << "Parser::parse_function_declaration()" << '\n';
+#endif
     size_t i = m_cursor;
-    if (seek_token(i).has_value()) {
-        if (seek_token(i).value().type() == TokenType::Identifier) {
-            consume_token();
-
-            consume_token();
-            consume_token();
-
-            auto block = parse_block_statement();
-            auto fn_block = make<BlockStatement>();
-            auto fn_decl = std::make_unique<FunctionDeclaration>(
-                0,
-                std::make_shared<Identifier>(seek_token(i).value().data_str),
-                std::move(block)
-            );
-
-            return fn_decl;
-        }
+    auto fn_decl = std::make_shared<FunctionDeclaration>();
+    if (!seek_token(i).has_value()) {
+        Error("Missing function definition");
+        return fn_decl;
     }
-    return {};
+
+    if (seek_token(i).value().type() != TokenType::Identifier)
+    {
+        Error("Missing function name");
+        return fn_decl;
+    }
+    
+    consume_token();
+    consume_token();
+    consume_token();
+
+    auto block = parse_block_statement();
+    auto fn_block = make<BlockStatement>();
+    fn_decl = std::make_shared<FunctionDeclaration>(
+        0,
+        std::make_shared<Identifier>(seek_token(i).value().data_str),
+        std::move(block)
+    );
+    
+    return fn_decl;
 }
 
 std::unique_ptr<BlockStatement> Parser::parse_block_statement()
