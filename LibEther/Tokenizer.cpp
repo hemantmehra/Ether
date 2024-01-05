@@ -90,7 +90,8 @@ Token Tokenizer::convert_to_token(std::string word)
     if (word == ";") return Token(TokenType::Semicolon);
 
     if (word == "fn") return Token(TokenType::K_fn);
-    if (word == "return") return Token(TokenType::K_return); 
+    if (word == "return") return Token(TokenType::K_return);
+    if (word == "let") return Token(TokenType::K_let);
 
     if (is_numeric(word)) {
         auto token = Token(TokenType::Constant);

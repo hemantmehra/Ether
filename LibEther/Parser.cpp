@@ -29,6 +29,11 @@ void Parser::consume_token()
     m_cursor++;
 }
 
+// bool Parser::check_current_token(TokenType type)
+// {
+//     return seek_token(m_cursor).has_value() && seek_token(m_cursor).value().type() != type;
+// }
+
 template <typename T, typename... Args>
 std::unique_ptr<T> make(Args &&...args) {
     return std::make_unique<T>(std::forward<Args>(args)...);
@@ -71,9 +76,9 @@ std::shared_ptr<FunctionDeclaration> Parser::parse_function_declaration()
         return fn_decl;
     }
     
-    consume_token();
-    consume_token();
-    consume_token();
+    consume_token(); // function name
+    consume_token(); // (
+    consume_token(); // )
 
     auto block = parse_block_statement();
     fn_decl = std::make_shared<FunctionDeclaration>(
@@ -103,8 +108,13 @@ std::unique_ptr<BlockStatement> Parser::parse_block_statement()
         return block;
     }
 
-    consume_token();
-    auto return_statement = parse_return_statement();
+    consume_token(); // {
+
+    while (seek_token(m_cursor).has_value() && seek_token(m_cursor).value().type() != TokenType::CloseBrace)
+    {
+        auto statement = parse_statement();
+        block->append(statement);
+    }
 
     if (seek_token(m_cursor).value().type() != TokenType::CloseBrace)
     {
@@ -112,13 +122,55 @@ std::unique_ptr<BlockStatement> Parser::parse_block_statement()
         return block;
     }
 
-    consume_token();
-    block->append(return_statement);
+    consume_token(); // }
     return block;
 }
 
-// std::shared_ptr<VariableDeclaration> Parser::parse_variable_declaration()
-// {}
+std::shared_ptr<ASTNode> Parser::parse_statement()
+{
+#ifdef PARSER_DEBUG
+    std::cout << "Parser::parse_statement()" << '\n';
+#endif
+    size_t i = m_cursor;
+    std::shared_ptr<ASTNode> statement;
+    if (!seek_token(i).has_value()) {
+        Error("Unexpected end of program.");
+        return statement;
+    }
+
+    if (seek_token(i).value().type() == TokenType::K_return)
+    {
+        statement = parse_return_statement();
+    }
+
+    else if (seek_token(i).value().type() == TokenType::K_let)
+    {
+        statement = parse_variable_declaration();
+    }
+
+    else
+    {
+        Error("Unexpected token at start of statement.");
+    }
+
+
+    return statement;
+}
+
+std::shared_ptr<VariableDeclaration> Parser::parse_variable_declaration()
+{
+#ifdef PARSER_DEBUG
+    std::cout << "Parser::parse_variable_declaration()" << '\n';
+#endif
+    size_t i = m_cursor;
+    auto var_decl = std::make_shared<VariableDeclaration>(0, std::make_shared<Identifier>("a"), std::make_shared<Literal>(42));
+    consume_token(); // let
+    consume_token(); // x
+    consume_token(); // =
+    consume_token(); // 1
+    consume_token(); // ;
+    return var_decl;
+}
 
 std::shared_ptr<ReturnStatement> Parser::parse_return_statement()
 {
@@ -138,7 +190,9 @@ std::shared_ptr<ReturnStatement> Parser::parse_return_statement()
         return return_statement;
     }
 
-        consume_token();
+    consume_token();
+
+    // if (seek_token())
     consume_token();
     return return_statement;
 }

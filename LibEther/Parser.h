@@ -31,12 +31,14 @@ public:
 private:
     std::shared_ptr<FunctionDeclaration> parse_function_declaration();
     std::unique_ptr<BlockStatement> parse_block_statement();
-    // std::shared_ptr<VariableDeclaration> parse_variable_declaration();
+    std::shared_ptr<ASTNode> parse_statement();
+    std::shared_ptr<VariableDeclaration> parse_variable_declaration();
     std::shared_ptr<ReturnStatement> parse_return_statement();
     // std::shared_ptr<Expression> parse_expression();
 
     std::optional<Token> seek_token(size_t);
     void consume_token();
+    bool check_current_token(TokenType);
 
     size_t m_cursor { 0 };
     std::vector<Token> m_tokens;

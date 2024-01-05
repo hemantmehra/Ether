@@ -19,6 +19,7 @@
     __LIST_TOKEN_TYPE(Identifier) \
     __LIST_TOKEN_TYPE(K_fn) \
     __LIST_TOKEN_TYPE(K_return) \
+    __LIST_TOKEN_TYPE(K_let) \
 
 namespace Ether
 {
