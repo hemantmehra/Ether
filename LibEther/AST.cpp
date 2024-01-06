@@ -63,6 +63,17 @@ std::string VariableDeclaration::generate_c_code(int indent) const
     return ss.str();
 }
 
+std::string StructMemberDeclaration::generate_c_code(int indent) const
+{
+    auto datatype_list = DataTypeList::get_instance();
+    std::stringstream ss;
+    std::string indent_str = get_indent_string(indent);
+
+    ss << indent_str << datatype_list->get(m_datatype_id) << " " << identifier().generate_c_code(indent);
+    ss << ";\n";
+    return ss.str();
+}
+
 std::string ReturnStatement::generate_c_code(int indent) const
 {
     std::stringstream ss;
@@ -121,6 +132,13 @@ void VariableDeclaration::dump(int indent) const
     std::cout << "VaribleDeclaration: " << "\n";
     identifier().dump(indent + 1);
     // expression().dump(indent + 1);
+}
+
+void StructMemberDeclaration::dump(int indent) const
+{
+    print_indent(indent);
+    std::cout << "StructMemberDeclaration: " << "\n";
+    identifier().dump(indent + 1);
 }
 
 void ReturnStatement::dump(int indent) const

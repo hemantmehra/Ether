@@ -58,6 +58,8 @@ std::optional<std::string> Tokenizer::next_word()
 
         if (isspace(ch)) consume_char();
     }
+
+    if (buffer.length() == 0) return {};
     return buffer;
 }
 
@@ -90,9 +92,11 @@ Token Tokenizer::convert_to_token(std::string word)
 
     if (word == ",") return Token(TokenType::Comma);
     if (word == ";") return Token(TokenType::Semicolon);
+    if (word == ":") return Token(TokenType::Colon);
     if (word == "=") return Token(TokenType::O_eq);
 
     if (word == "fn") return Token(TokenType::K_fn);
+    if (word == "struct") return Token(TokenType::K_struct);
     if (word == "return") return Token(TokenType::K_return);
     if (word == "let") return Token(TokenType::K_let);
 
@@ -122,6 +126,15 @@ std::string Token::to_string()
 
         LIST_TOKEN_TYPES
 #undef __LIST_TOKEN_TYPE
+    }
+
+    switch (token_type)
+    {
+        case TokenType::Identifier:
+            s = "Identifier: '" + data_str + "'";
+            break;
+        default:
+            break;
     }
 
     return s;

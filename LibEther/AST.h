@@ -42,6 +42,7 @@ public:
     virtual bool is_literal() const { return false; }
     virtual bool is_variable_declaration() const { return false; }
     virtual bool is_struct_declaration() const { return false; }
+    virtual bool is_struct_member_declaration() const { return false; }
 
 protected:
     ASTNode() {}
@@ -139,6 +140,7 @@ private:
 class StructDeclaration : public ASTNode
 {
 public:
+    StructDeclaration() {}
     StructDeclaration(std::shared_ptr<Identifier> identifier, std::unique_ptr<ScopeNode> body)
         : m_identifier(std::move(identifier)), m_body(std::move(body))
     {}
@@ -152,6 +154,24 @@ public:
 private:
     std::shared_ptr<Identifier> m_identifier;
     std::unique_ptr<ScopeNode> m_body;
+};
+
+class StructMemberDeclaration : public ASTNode
+{
+public:
+    StructMemberDeclaration() {}
+    StructMemberDeclaration(int datatype_id, std::shared_ptr<Identifier> identifier)
+        : m_datatype_id(datatype_id), m_identifier(std::move(identifier))
+    {}
+
+    const Identifier& identifier() const { return *m_identifier; }
+    virtual bool is_struct_member_declaration() const override { return true; }
+    virtual void dump(int) const override;
+    virtual std::string generate_c_code(int) const override;
+
+private:
+    int m_datatype_id;
+    std::shared_ptr<Identifier> m_identifier;
 };
 
 class FunctionDeclaration : public ASTNode

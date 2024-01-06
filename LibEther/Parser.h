@@ -30,9 +30,12 @@ public:
 
 private:
     std::shared_ptr<FunctionDeclaration> parse_function_declaration();
+    std::shared_ptr<StructDeclaration> parse_struct_declaration();
     std::unique_ptr<BlockStatement> parse_block_statement();
+    std::unique_ptr<BlockStatement>parse_struct_block_statement();
     std::shared_ptr<ASTNode> parse_statement();
     std::shared_ptr<VariableDeclaration> parse_variable_declaration();
+    std::shared_ptr<StructMemberDeclaration> parse_struct_member_declaration();
     std::shared_ptr<ReturnStatement> parse_return_statement();
     // std::shared_ptr<Expression> parse_expression();
 

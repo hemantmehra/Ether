@@ -1,0 +1,9 @@
+struct Vector {
+    x : i32,
+    y : i32,
+}
+
+fn main() {
+    let x = 42;
+    return;
+}
