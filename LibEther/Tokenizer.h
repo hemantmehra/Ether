@@ -17,6 +17,7 @@
     __LIST_TOKEN_TYPE(Constant) \
     __LIST_TOKEN_TYPE(String) \
     __LIST_TOKEN_TYPE(Identifier) \
+    __LIST_TOKEN_TYPE(O_eq) \
     __LIST_TOKEN_TYPE(K_fn) \
     __LIST_TOKEN_TYPE(K_return) \
     __LIST_TOKEN_TYPE(K_let) \

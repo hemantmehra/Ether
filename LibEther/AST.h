@@ -119,6 +119,7 @@ private:
 class VariableDeclaration : public ASTNode
 {
 public:
+    VariableDeclaration() {}
     VariableDeclaration(int datatype_id, std::shared_ptr<Identifier> identifier, std::shared_ptr<Expression> expression)
         : m_datatype_id(datatype_id), m_identifier(std::move(identifier)), m_expression(expression)
     {}

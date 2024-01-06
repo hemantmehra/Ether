@@ -38,7 +38,7 @@ private:
 
     std::optional<Token> seek_token(size_t);
     void consume_token();
-    bool check_current_token(TokenType);
+    bool check_token(size_t, TokenType);
 
     size_t m_cursor { 0 };
     std::vector<Token> m_tokens;

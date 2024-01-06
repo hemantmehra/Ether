@@ -29,10 +29,10 @@ void Parser::consume_token()
     m_cursor++;
 }
 
-// bool Parser::check_current_token(TokenType type)
-// {
-//     return seek_token(m_cursor).has_value() && seek_token(m_cursor).value().type() != type;
-// }
+bool Parser::check_token(size_t i, TokenType type)
+{
+    return seek_token(i).has_value() && seek_token(i).value().type() == type;
+}
 
 template <typename T, typename... Args>
 std::unique_ptr<T> make(Args &&...args) {
@@ -163,12 +163,30 @@ std::shared_ptr<VariableDeclaration> Parser::parse_variable_declaration()
     std::cout << "Parser::parse_variable_declaration()" << '\n';
 #endif
     size_t i = m_cursor;
-    auto var_decl = std::make_shared<VariableDeclaration>(0, std::make_shared<Identifier>("a"), std::make_shared<Literal>(42));
+    auto var_decl = std::make_shared<VariableDeclaration>();
     consume_token(); // let
-    consume_token(); // x
-    consume_token(); // =
-    consume_token(); // 1
-    consume_token(); // ;
+
+    if (check_token(i+1, TokenType::Identifier)
+        && check_token(i+2, TokenType::O_eq)
+        && check_token(i+3, TokenType::Constant)
+        && check_token(i+4, TokenType::Semicolon)
+    ) {
+        std::string ident = seek_token(i+1).value().data_str;
+        int cons = seek_token(i+3).value().data_int;
+
+        var_decl = std::make_shared<VariableDeclaration>(
+            0,
+            std::make_shared<Identifier>(ident),
+            std::make_shared<Literal>(cons)
+        );
+        consume_token(); // identifier
+        consume_token(); // EQ
+        consume_token(); // Constant
+        consume_token(); // Semicolon
+        return var_decl;
+    }
+
+    Error("Invalid variable declaration");
     return var_decl;
 }
 

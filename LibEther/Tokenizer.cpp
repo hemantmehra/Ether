@@ -74,7 +74,9 @@ void Tokenizer::consume_char()
 
 bool is_numeric(std::string word)
 {
-    return false;
+    std::string::const_iterator it = word.begin();
+    while (it != word.end() && std::isdigit(*it)) ++it;
+    return !word.empty() && it == word.end();
 }
 
 Token Tokenizer::convert_to_token(std::string word)
@@ -88,6 +90,7 @@ Token Tokenizer::convert_to_token(std::string word)
 
     if (word == ",") return Token(TokenType::Comma);
     if (word == ";") return Token(TokenType::Semicolon);
+    if (word == "=") return Token(TokenType::O_eq);
 
     if (word == "fn") return Token(TokenType::K_fn);
     if (word == "return") return Token(TokenType::K_return);
@@ -95,6 +98,7 @@ Token Tokenizer::convert_to_token(std::string word)
 
     if (is_numeric(word)) {
         auto token = Token(TokenType::Constant);
+        token.data_int = stoi(word);
         return token;
     }
 
